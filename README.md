@@ -1,4 +1,4 @@
-# Daily Focus Timer
+# Daily Focus Timer 
 
 A minimalist Pomodoro web app for deep work, built using frontend-only logic.
 
