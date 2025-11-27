@@ -17,10 +17,15 @@ export const useTimer = () => {
   const synth = useRef<Tone.Synth | null>(null);
 
   useEffect(() => {
-    synth.current = new Tone.Synth().toDestination();
+    if (!synth.current) {
+        synth.current = new Tone.Synth().toDestination();
+    }
   }, []);
 
   const playSound = useCallback(() => {
+    if (Tone.context.state !== 'running') {
+        Tone.start();
+    }
     synth.current?.triggerAttackRelease("C4", "8n");
   }, []);
 
@@ -33,13 +38,16 @@ export const useTimer = () => {
       }, 1000);
     } else if (isActive && timeRemaining === 0) {
       playSound();
-      const newMode = mode === 'work' ? 'break' : 'work';
       if (mode === 'work') {
         setSessionsCompleted(prev => prev + 1);
+        setMode('break');
+        setTimeRemaining(BREAK_MINUTES * 60);
+        // Autostart break
+      } else { // mode === 'break'
+        setMode('work');
+        setTimeRemaining(WORK_MINUTES * 60);
+        setIsActive(false); // Pause after break
       }
-      setMode(newMode);
-      setTimeRemaining(newMode === 'work' ? WORK_MINUTES * 60 : BREAK_MINUTES * 60);
-      setIsActive(false); 
     }
 
     return () => {
