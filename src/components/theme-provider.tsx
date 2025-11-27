@@ -29,35 +29,23 @@ export function ThemeProvider({
   ...props
 }: ThemeProviderProps) {
   const [theme, setTheme] = useState<Theme>(() => {
-    if (typeof window !== 'undefined') {
-      return (localStorage.getItem(storageKey) as Theme) || defaultTheme;
+    if (typeof window === 'undefined') {
+      return defaultTheme;
     }
-    return defaultTheme;
+    return (localStorage.getItem(storageKey) as Theme) || defaultTheme;
   });
-  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
-  }, []);
-
-
-  useEffect(() => {
-    if (mounted) {
-      const root = window.document.documentElement;
-      root.classList.remove("light", "dark");
-      root.classList.add(theme);
-      localStorage.setItem(storageKey, theme);
-    }
-  }, [theme, storageKey, mounted]);
+    const root = window.document.documentElement;
+    root.classList.remove("light", "dark");
+    root.classList.add(theme);
+    localStorage.setItem(storageKey, theme);
+  }, [theme, storageKey]);
 
   const value = {
     theme,
     setTheme,
   };
-
-  if (!mounted) {
-    return null;
-  }
 
   return (
     <ThemeProviderContext.Provider {...props} value={value}>
