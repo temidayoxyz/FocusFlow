@@ -29,43 +29,27 @@ export function ThemeProvider({
   ...props
 }: ThemeProviderProps) {
   const [theme, setTheme] = useState<Theme>(defaultTheme);
-  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (mounted) {
-      const storedTheme = localStorage.getItem(storageKey) as Theme | null;
-      if (storedTheme) {
-        setTheme(storedTheme);
-      }
+    const storedTheme = localStorage.getItem(storageKey) as Theme | null;
+    if (storedTheme) {
+      setTheme(storedTheme);
     }
-  }, [mounted, storageKey]);
+  }, [storageKey]);
 
   useEffect(() => {
-    if (mounted) {
-      const root = window.document.documentElement;
-      root.classList.remove("light", "dark");
-      root.classList.add(theme);
-    }
-  }, [theme, mounted]);
-
+    const root = window.document.documentElement;
+    root.classList.remove("light", "dark");
+    root.classList.add(theme);
+    localStorage.setItem(storageKey, theme);
+  }, [theme, storageKey]);
 
   const value = {
     theme,
     setTheme: (newTheme: Theme) => {
-      if (mounted) {
-        localStorage.setItem(storageKey, newTheme);
-      }
       setTheme(newTheme);
     },
   };
-
-  if (!mounted) {
-    return null;
-  }
 
   return (
     <ThemeProviderContext.Provider {...props} value={value}>
