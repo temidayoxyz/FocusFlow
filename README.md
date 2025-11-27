@@ -13,7 +13,7 @@ A minimalist Pomodoro web app for deep work, built using frontend-only logic.
 
 ## Stack
 
-* Nextjs, Tailwind, and JavaScript
+* TypeScript, NextJS, Tailwind CSS
 
 ## Use Case
 
