@@ -28,27 +28,44 @@ export function ThemeProvider({
   storageKey = "ui-theme",
   ...props
 }: ThemeProviderProps) {
-  const [theme, setTheme] = useState<Theme>(
-    () => (typeof window !== 'undefined' ? (localStorage.getItem(storageKey) as Theme) || defaultTheme : defaultTheme)
-  );
+  const [theme, setTheme] = useState<Theme>(defaultTheme);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const root = window.document.documentElement;
+    setMounted(true);
+  }, []);
 
-    root.classList.remove("light", "dark");
-    root.classList.add(theme);
+  useEffect(() => {
+    if (mounted) {
+      const storedTheme = localStorage.getItem(storageKey) as Theme | null;
+      if (storedTheme) {
+        setTheme(storedTheme);
+      }
+    }
+  }, [mounted, storageKey]);
 
-  }, [theme]);
+  useEffect(() => {
+    if (mounted) {
+      const root = window.document.documentElement;
+      root.classList.remove("light", "dark");
+      root.classList.add(theme);
+    }
+  }, [theme, mounted]);
+
 
   const value = {
     theme,
-    setTheme: (theme: Theme) => {
-      if (typeof window !== 'undefined') {
-        localStorage.setItem(storageKey, theme);
+    setTheme: (newTheme: Theme) => {
+      if (mounted) {
+        localStorage.setItem(storageKey, newTheme);
       }
-      setTheme(theme);
+      setTheme(newTheme);
     },
   };
+
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <ThemeProviderContext.Provider {...props} value={value}>
