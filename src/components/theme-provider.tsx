@@ -34,6 +34,11 @@ export function ThemeProvider({
     }
     return (localStorage.getItem(storageKey) as Theme) || defaultTheme;
   });
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const root = window.document.documentElement;
@@ -46,6 +51,10 @@ export function ThemeProvider({
     theme,
     setTheme,
   };
+
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <ThemeProviderContext.Provider {...props} value={value}>
